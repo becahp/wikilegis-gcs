@@ -12,8 +12,7 @@ Vagrant.configure("2") do |config|
 
     config.vm.network :private_network, ip: "192.168.33.101"
     config.vm.synced_folder "./", "/vagrant", id: "vagrant-root"
-    config.vm.provision "shell", inline: "echo hello"
-
+    config.vm.provision "shell", privileged: false, keep_color: true, path: "provision/setup.sh"
 end
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
