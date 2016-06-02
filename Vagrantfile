@@ -10,6 +10,8 @@ Vagrant.configure("2") do |config|
     config.vm.box = "precise64"
     config.vm.box_url = "http://files.vagrantup.com/precise64.box"
 
+    config.ssh.forward_agent = true
+
     config.vm.network :private_network, ip: "192.168.33.101"
     config.vm.synced_folder "./", "/vagrant", id: "vagrant-root"
     config.vm.provision "shell", privileged: false, keep_color: true, path: "provision/setup.sh"
@@ -75,4 +77,3 @@ end
   #   sudo apt-get update
   #   sudo apt-get install -y apache2
   # SHELL
-

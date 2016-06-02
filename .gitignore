@@ -2,6 +2,7 @@ whoosh_index
 public
 db.sqlite3
 .webassets-cache
+.vagrant/*
 
 # Created by https://www.gitignore.io/api/python,django
 
@@ -77,4 +78,3 @@ target/
 *.pyc
 __pycache__/
 local_settings.py
-
