@@ -8,3 +8,4 @@ sudo apt-get install -y libjpeg8 libjpeg62-dev libfreetype6 libfreetype6-dev
 sudo pip install Pillow
 cd /vagrant/
 sudo pip install -r requirements.txt
+./manage.py migrate
