@@ -27,6 +27,17 @@ $ ./manage.py createsuperuser
 $ ./manage.py runserver
 ```
 
+# Running the development server on Vagrant
+
+```bash
+$ ./manage.py runserver 0.0.0.0:8000
+```
+
+# Opening the Vagrant server locally
+
+```bash
+$ http://localhost:8000
+```
 
 # Admin interface
 

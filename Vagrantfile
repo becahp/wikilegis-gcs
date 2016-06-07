@@ -12,9 +12,9 @@ Vagrant.configure("2") do |config|
 
     config.ssh.forward_agent = true
 
-    config.vm.network :private_network, ip: "192.168.33.101"
     config.vm.synced_folder "./", "/vagrant", id: "vagrant-root"
     config.vm.provision "shell", privileged: false, keep_color: true, path: "provision/setup.sh"
+    config.vm.network :forwarded_port, guest: 8000, host: 8000
 end
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
