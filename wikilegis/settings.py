@@ -15,7 +15,7 @@ from django.utils.translation import ugettext_lazy as _
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-from decouple import config
+from decouple import config, Csv
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -28,17 +28,18 @@ import django.conf.global_settings as default
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'g8#!8*0sr!zsg!q=on=n66dtie69u0z1qhfk-&c8bc_%t#&g@%'
+SECRET_KEY = config('SECRET_KEY', default='secret_key')
 
-API_KEY = config('API_KEY', default='9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b')
+API_KEY = config('API_KEY', default='apikey')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS',
+                       cast=Csv(lambda x: x.strip().strip(',').strip()),
+                       default='*')
 
-ALLOWED_HOSTS = []
 
 # Application definition
-
 INSTALLED_APPS = (
     'wikilegis.auth2',
     'wikilegis.core',
@@ -92,6 +93,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'social.apps.django_app.middleware.SocialAuthExceptionMiddleware',
 )
 
 ROOT_URLCONF = 'wikilegis.urls'
@@ -122,11 +124,14 @@ WSGI_APPLICATION = 'wikilegis.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+	'ENGINE': 'django.db.backends.' + config('DATABASE_ENGINE', default='sqlite3'),
+        'NAME': os.path.join(BASE_DIR, config('DATABASE_NAME', default='db.sqlite3')),
+        'USER': config('DATABASE_USER', default=''),
+        'PASSWORD': config('DATABASE_PASSWORD', default=''),
+        'HOST': config('DATABASE_HOST', default=''),
+        'PORT': config('DATABASE_PORT', default=''),
     }
 }
-
 
 # django-haystack: http://django-haystack.readthedocs.org/
 HAYSTACK_CONNECTIONS = {
@@ -137,14 +142,16 @@ HAYSTACK_CONNECTIONS = {
 }
 
 
-LOCALE_PATHS = [
-    os.path.join(HERE, 'locale'),
-]
+# Login settings
+LOGOUT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
+LOGIN_URL = config('LOGIN_URL', default='/accounts/login/')
+LOGIN_REDIRECT_URL = config('LOGIN_REDIRECT_URL', default='/')
 
 # Authentication and user management
 
-AUTH_USER_MODEL = 'auth2.User'
+AUTH_USER_MODEL = config('AUTH_USER_MODEL', default='auth2.User')
 
 AUTHENTICATION_BACKENDS = (
     'social.backends.google.GoogleOAuth2',
@@ -155,9 +162,10 @@ AUTHENTICATION_BACKENDS = (
 
 # If `False` the registration view will not require user activation through e-mail.
 # Useful to disable activation during DEBUG or other situations where mails can't be sent.
-ACCOUNT_ACTIVATION_REQUIRED = not DEBUG
-
-ACCOUNT_ACTIVATION_DAYS = 7
+ACCOUNT_ACTIVATION_REQUIRED = config('ACCOUNT_ACTIVATION_REQUIRED', cast=bool,
+                                     default=(not DEBUG))
+ACCOUNT_ACTIVATION_DAYS = config('ACCOUNT_ACTIVATION_DAYS', default=7,
+                                 cast=int)
 
 REGISTRATION_AUTO_LOGIN = True
 
@@ -191,11 +199,17 @@ USER_FIELDS = ('email',)
 
 # Fill these with your application credentials in order to use social logins.
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = ''
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ''
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY', default='')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET', default='')
 
-SOCIAL_AUTH_FACEBOOK_KEY = ''
-SOCIAL_AUTH_FACEBOOK_SECRET = ''
+#SOCIAL_AUTH_FACEBOOK_KEY = '323334225242111'
+#SOCIAL_AUTH_FACEBOOK_SECRET = '402247e6e5eab102da2c1f836a152e46'
+
+SOCIAL_AUTH_FACEBOOK_KEY = config('SOCIAL_AUTH_FACEBOOK_KEY', default='')
+SOCIAL_AUTH_FACEBOOK_SECRET = config('SOCIAL_AUTH_FACEBOOK_SECRET', default='')
+
+SOCIAL_AUTH_RAISE_EXCEPTIONS = False
+SOCIAL_AUTH_LOGIN_ERROR_URL = '/accounts/login/'
 
 SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
 
@@ -203,6 +217,8 @@ SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
     'fields': 'id,name,first_name,last_name,email'
 }
 
+#SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
+#SOCIAL_AUTH_LOGIN_URL = '/login/facebook'
 
 # Information about available social backends. I know this is not the
 # best place to put this kind of things, but what could one do?
@@ -226,6 +242,9 @@ SITE_ID = 1
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
+LOCALE_PATHS = [
+    os.path.join(HERE, 'locale'),
+]
 
 languages = dict(default.LANGUAGES)
 language_tuple = lambda language_code: (language_code, languages[language_code])
@@ -235,21 +254,18 @@ LANGUAGES = (
     language_tuple('pt-br'),
 )
 
-LANGUAGE_CODE = 'pt-br'
-
-TIME_ZONE = 'America/Sao_Paulo'
+LANGUAGE_CODE = config('LANGUAGE_CODE', default='pt-br')
+TIME_ZONE = config('TIME_ZONE', default='America/Sao_Paulo')
 
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = config('STATIC_URL', default='/static/')
 
 STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, 'public', 'static'))
 
@@ -267,15 +283,12 @@ COMPRESS_PRECOMPILERS = (
 
 LIBSASS_SOURCEMAPS = DEBUG
 
-MEDIA_URL = '/media/'
+MEDIA_URL = config('MEDIA_URL', default='/media/')
 
 MEDIA_ROOT = os.path.abspath(os.path.join(BASE_DIR, 'public', 'media'))
 
 ## Debug toolbar
 STATIC_IPS = ('127.0.0.1', '::1', )
-
-# Login settings
-LOGIN_REDIRECT_URL = '/'
 
 SERIALIZATION_MODULES = {
     'csv': 'export.serializers.csv_serializer'

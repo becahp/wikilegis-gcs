@@ -747,7 +747,7 @@ msgstr "Baixar"
 
 #: templates/index.html:11
 msgid "Your legislative editing tool"
-msgstr "Sua ferramenta de edição legislativa"
+msgstr "Consultas públicas"
 
 #: templates/index.html:12
 msgid ""
@@ -755,9 +755,7 @@ msgid ""
 "Hacker Lab, designed to enable citizens to suggest modifications to the "
 "wording of Bills"
 msgstr ""
-"O Wikilegis é um projeto desenvolvido pelo Laboratório Hacker da Câmara dos "
-"Deputados, com o objetivo de permitir ao(à) cidadão(ã) a propor alterações à "
-"redação de projetos de lei."
+"Fórum de discussão e Consultas públicas de projetos de lei"
 
 #: templates/index.html:19
 msgid "Login"
