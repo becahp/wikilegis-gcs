@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<div class="dark-bg valign-wrapper">
+    <div class="container about">
+        <div class="row">
+            <div class="col m3 s12">
+                {% load static %}
+                {% include "_sidebar_logo.html" %}
+            </div>
+            <div class="col m3 s12">
+                <h5>{% trans "Page not found" %}</h5>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col m12">
+                <a class="waves-effect wbtn waves-light btn right-align" href="{% url "index" %}">{% trans "Back to main page" %}</a></p>
+        	</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
